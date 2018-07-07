@@ -5813,7 +5813,6 @@ end:
 static int sched_group_energy(struct energy_env *eenv)
 {
 	struct cpumask visit_cpus;
-	struct sched_group *sg;
 	int cpu_count;
 	u64 total_energy = 0;
 
