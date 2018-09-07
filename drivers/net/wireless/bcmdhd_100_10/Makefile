@@ -295,6 +295,9 @@ DHDCFLAGS += -DSET_SSID_FAIL_CUSTOM_RC=100
 
 DHDCFLAGS += -DBCMCRYPTO_COMPONENT
 
+# Platform version
+PLATFORM_VERSION=8.1
+
 # Android Version Check from Platform source
 ifneq ($(ANDROID_VERSION),)
 MAJOR_VERSION := $(shell echo $(ANDROID_VERSION) | rev | cut -c 5- | rev)
