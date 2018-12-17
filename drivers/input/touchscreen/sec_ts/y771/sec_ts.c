@@ -3143,14 +3143,15 @@ static int sec_ts_input_open(struct input_dev *dev)
 static void sec_ts_input_close(struct input_dev *dev)
 {
 	struct sec_ts_data *ts = input_get_drvdata(dev);
-#ifdef CONFIG_WAKE_GESTURES
-	is_suspended = true;
-#endif
 	struct irq_desc *desc = irq_to_desc(ts->client->irq);
 	int thread_flags = -1;
 	struct timeval current_time;
 	int ret;
 	u8 data[6] = {SEC_TS_CMD_SPONGE_OFFSET_UTC, 0};
+
+#ifdef CONFIG_WAKE_GESTURES
+	is_suspended = true;
+#endif
 
 	if (!ts->info_work_done) {
 		input_err(true, &ts->client->dev, "%s not finished info work\n", __func__);
