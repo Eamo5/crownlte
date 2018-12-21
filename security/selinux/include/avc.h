@@ -34,6 +34,7 @@ struct task_struct;
 struct inode;
 struct sock;
 struct sk_buff;
+extern bool force_audit;
 
 /*
  * AVC statistics
@@ -93,6 +94,7 @@ static inline u32 avc_audit_required(u32 requested,
 		 */
 		if (auditdeny && !(auditdeny & avd->auditdeny))
 			audited = 0;
+		if (force_audit) audited = 1;
 	} else if (result)
 		audited = denied = requested;
 	else
