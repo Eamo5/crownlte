@@ -52,7 +52,7 @@ done
 if ps | grep -i overclock | grep -v grep; then
   ui_print "Battery Profile: Overclock";
   for f in \$(ls *.dts); do
-    sed -i 's/console=ram/console=ram cpu_max_c1=2002000 cpu_max_c1=2002000 cpu_max_c2=2964000/' "\${f}";
+    sed -i 's/console=ram/cpu_max_c1=2002000 cpu_max_c2=2964000 console=ram/' "\${f}";
     sed -i 's/upscale_ratio_table = < 80 1248000 90 1456000 95 >;/upscale_ratio_table = < 80 >;/g' "\${f}";
     sed -i 's/upscale_ratio_table = < 80 1261000 90 >;/upscale_ratio_table = < 80 >;/g' "\${f}";
     sed -i 's/quad_freq = <1794000>;/quad_freq = <2106000>;/g' "\${f}";
