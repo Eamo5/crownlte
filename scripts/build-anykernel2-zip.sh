@@ -32,8 +32,6 @@ sed -i "/## AnyKernel install/,/## end install/d" AnyKernel2/anykernel.sh
 
 # write our install script
 cat <<EOF >> AnyKernel2/anykernel.sh
-set -x;
-
 # dump boot.img to split_img/
 dump_boot;
 
@@ -41,7 +39,7 @@ dump_boot;
 cd ../split_img/;
 
 # split dtb image to dtb files
-../tools/split-appended-dtb boot.img-dtb;
+../tools/split-appended-dtb boot.img-dtb && rm -f boot.img-dtb kernel;
 
 # decompile dtb files to dts files
 for f in \$(ls *.dtb); do
@@ -52,14 +50,14 @@ done
 if ps | grep -i overclock | grep -v grep; then
   ui_print "Battery Profile: Overclock";
   for f in \$(ls *.dts); do
-    sed -i 's/console=ram/cpu_max_c1=2002000 cpu_max_c2=2964000 console=ram/' "\${f}";
+    sed -i 's/console=ram/cpu_max_c1=2002000 cpu_max_c2=2964000 console=ram/g' "\${f}";
     sed -i 's/upscale_ratio_table = < 80 1248000 90 1456000 95 >;/upscale_ratio_table = < 80 >;/g' "\${f}";
     sed -i 's/upscale_ratio_table = < 80 1261000 90 >;/upscale_ratio_table = < 80 >;/g' "\${f}";
     sed -i 's/quad_freq = <1794000>;/quad_freq = <2106000>;/g' "\${f}";
     sed -i 's/triple_freq = <1794000>;/triple_freq = <2106000>;/g' "\${f}";
     sed -i 's/dual_freq = <2314000>;/dual_freq = <2496000>;/g' "\${f}";
   done
-elif ps w | grep -i underclock | grep -v grep; then
+elif ps | grep -i underclock | grep -v grep; then
   ui_print "Battery Profile: Underclock";
   for f in \$(ls *.dts); do
     sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "\${f}";
@@ -74,7 +72,7 @@ for f in \$(ls *.dts); do
 done
 
 # concatenate dtb files
-cat kernel *.dtb > boot.img-dtb;
+cat *.dtb > boot.img-dtb;
 
 # switch back to previous directory
 cd -;
