@@ -53,8 +53,8 @@ if ps | grep -i overclock | grep -v grep; then
     sed -i 's/console=ram/cpu_max_c1=2002000 cpu_max_c2=2964000 console=ram/g' "\${f}";
     sed -i 's/upscale_ratio_table = < 80 1248000 90 1456000 95 >;/upscale_ratio_table = < 80 >;/g' "\${f}";
     sed -i 's/upscale_ratio_table = < 80 1261000 90 >;/upscale_ratio_table = < 80 >;/g' "\${f}";
-    sed -i 's/quad_freq = <1794000>;/quad_freq = <2106000>;/g' "\${f}";
-    sed -i 's/triple_freq = <1794000>;/triple_freq = <2106000>;/g' "\${f}";
+    sed -i 's/quad_freq = <1794000>;/quad_freq = <2002000>;/g' "\${f}";
+    sed -i 's/triple_freq = <1794000>;/triple_freq = <2002000>;/g' "\${f}";
     sed -i 's/dual_freq = <2314000>;/dual_freq = <2496000>;/g' "\${f}";
   done
 elif ps | grep -i underclock | grep -v grep; then
