@@ -1692,6 +1692,9 @@ kernelversion:
 image_name:
 	@echo $(KBUILD_IMAGE)
 
+zip:
+	scripts/build-anykernel2-zip.sh
+
 # Clear a bunch of variables before executing the submake
 tools/: FORCE
 	$(Q)mkdir -p $(objtree)/tools
