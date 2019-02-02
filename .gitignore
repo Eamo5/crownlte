@@ -76,6 +76,7 @@ Module.symvers
 include/config
 include/generated
 arch/*/include/generated
+scripts/dtbtool_exynos/dtbtool
 
 # stgit generated dirs
 patches-*
