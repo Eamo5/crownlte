@@ -1861,7 +1861,6 @@ int __udp4_lib_rcv(struct sk_buff *skb, struct udp_table *udptable,
 
 	sk = __udp4_lib_lookup_skb(skb, uh->source, uh->dest, udptable);
 	if (sk) {
-		int ret;
 		/* START_OF_KNOX_NPA */
 		struct nf_conn *ct = NULL;
 		enum ip_conntrack_info ctinfo;
