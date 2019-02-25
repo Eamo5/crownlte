@@ -57,7 +57,7 @@
 #define PLA_TEREDO_TIMER	0xd2cc
 #define PLA_REALWOW_TIMER	0xd2e8
 #define PLA_LEDSEL		0xdd90
-#define PLA_LED_FEATURE		0xdd92
+#define PLA_LED_FEATURE		0xdd920
 #define PLA_PHYAR		0xde00
 #define PLA_BOOT_CTRL		0xe004
 #define PLA_GPHY_INTR_IMR	0xe022
@@ -4275,6 +4275,7 @@ static void r8152b_get_version(struct r8152 *tp)
 		tp->mii.supports_gmii = 1;
 		break;
 	case 0x5c30:
+	case 0x6010:
 		tp->version = RTL_VER_06;
 		tp->mii.supports_gmii = 1;
 		break;
