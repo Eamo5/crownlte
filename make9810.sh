@@ -60,6 +60,9 @@ ZIP_GSI_S9=~/kernels/zip-gsi/
 ZIP_GSI_N960=~/kernels/zip-note-gsi/
 ZIP_OREO_AOSP_S9=~/kernels/zip-aosp/
 
+# Zip Output Directoryy
+ZIP_OUTPUT=~/output/zip/
+
 # Password for AIK sudo
 PASSWORD=
 
@@ -496,7 +499,7 @@ if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
 			cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F.img
 		elif [ "$4" == "oc" ]; then
 			cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F-oc.img
-		elif [ "$4" = "uc" ]; then
+		elif [ "$4" == "uc" ]; then
 			cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F-uc.img
 		fi
 	elif [ "$1" == "crownlte" ]; then
@@ -658,59 +661,72 @@ if [ "$4" == "test" ] || [ "$5" == "test" ]; then
 			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-"$PIE_VERSION".zip *
+			cp Endurance-Kernel-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
 			cd "$ZIP_OREO" || exit
 			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-"$OREO_VERSION".zip *
+			cp Endurance-Kernel-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "9.0-aosp" ]; then
 			cd "$ZIP_PIE_AOSP_S9" || exit
 			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
+			cp Endurance-Kernel-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "gsi" ]; then
 			cd "$ZIP_GSI_S9" || exit
 			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
+			cp Endurance-Kernel-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "8.1-aosp" ]; then
 			cd "$ZIP_OREO_AOSP_S9" || exit
 			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-AOSP-"$OREO_VERSION".zip *
+			cp Endurance-Kernel-AOSP-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 		fi
 	elif [ "$1" == "crownlte" ]; then
 		if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
 			cd "$ZIP_PIE_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$PIE_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-N9-OC-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-"$PIE_VERSION".zip *
+				zip -r Endurance-Kernel-N9-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		elif [ "$2" == "oreo" ]; then
 			cd "$ZIP_OREO_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$OREO_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-N9-OC-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-"$OREO_VERSION".zip *
+				zip -r Endurance-Kernel-N9-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		elif [ "$2" == "9.0-aosp" ]; then
 			cd "$ZIP_PIE_AOSP_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
+				zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		elif [ "$2" == "gsi" ]; then
 			cd "$ZIP_GSI_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
+				zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		fi
 	fi
@@ -728,59 +744,72 @@ if [ "$4" == "release" ] || [ "$5" == "release" ]; then
 			bsdiff_func
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-"$PIE_VERSION".zip *
+			cp Endurance-Kernel-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
 			cd "$ZIP_OREO" || exit
 			bsdiff_func
     		rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-"$OREO_VERSION".zip *
+			cp Endurance-Kernel-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "9.0-aosp" ]; then
 			cd "$ZIP_PIE_AOSP_S9" || exit
 			bsdiff_func
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
+			cp Endurance-Kernel-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "gsi" ]; then
 			cd "$ZIP_GSI_S9" || exit
 			bsdiff_func
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
+			cp Endurance-Kernel-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 		elif [ "$2" == "8.1-aosp" ]; then
 			cd "$ZIP_OREO_AOSP_S9" || exit
 			bsdiff_func
 			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
 			zip -r Endurance-Kernel-AOSP-"$OREO_VERSION".zip *
+			cp Endurance-Kernel-AOSP-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 		fi
 	elif [ "$1" == "crownlte" ]; then
 		if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
 			cd "$ZIP_PIE_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$PIE_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-N9-OC-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-"$PIE_VERSION".zip *
+				zip -r Endurance-Kernel-N9-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		elif [ "$2" == "oreo" ]; then
 			cd "$ZIP_OREO_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$OREO_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-N9-OC-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-"$OREO_VERSION".zip *
+				zip -r Endurance-Kernel-N9-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		elif [ "$2" == "9.0-aosp" ]; then
 			cd "$ZIP_PIE_AOSP_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
+				zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
+				cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		elif [ "$2" == "gsi" ]; then
 			cd "$ZIP_GSI_N960" || exit
 			rm -f *.zip
 			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION"-OC.zip *
+				zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			else
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
+				zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
+				cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 			fi
 		fi
 	fi
