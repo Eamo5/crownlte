@@ -402,7 +402,7 @@ static int samsung_abox_debug_probe(struct platform_device *pdev)
 		return -ENOMEM;
 
 	iommu_map(data->iommu_domain, IOVA_DUMP_BUFFER, abox_rmem->base,
-			abox_rmem->size, 0);
+				abox_rmem->size, 0);
 	data->dump_base = phys_to_virt(abox_rmem->base);
 	data->dump_base_phys = abox_rmem->base;
 	ret = device_create_file(dev, &dev_attr_gpr);
