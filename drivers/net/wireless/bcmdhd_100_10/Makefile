@@ -1383,6 +1383,7 @@ dhd-y := $(DHDOFILES)
 obj-$(DRIVER_TYPE)   += dhd.o
 
 subdir-ccflags-y += -Wno-stringop-overflow
+subdir-ccflags-y += -Wno-bool-compare
 
 all:
 	@echo "$(MAKE) --no-print-directory -C $(KDIR) SUBDIRS=$(CURDIR) modules"
