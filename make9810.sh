@@ -105,7 +105,7 @@ oreo_oc_crown () {
 	sed -i 's/upscale_ratio_table = < 80 1261000 90 >;/upscale_ratio_table = < 80 >;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	sed -i 's/unsigned long arg_cpu_max_c2 = 2704000;/unsigned long arg_cpu_max_c2 = 2964000;/g' "$CROWN_KERNEL_DIRECTORY"drivers/cpufreq/exynos-acme.c
 	sed -i 's/static unsigned long arg_cpu_max_c1 = 1794000;/static unsigned long arg_cpu_max_c1 = 2002000;/g' "$CROWN_KERNEL_DIRECTORY"drivers/cpufreq/exynos-acme.c
-	sed -i 's/quad_freq = <1794000>;/quad_freq = <2106000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+	sed -i 's/quad_freq = <1794000>;/quad_freq = <1794000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	sed -i 's/triple_freq = <1794000>;/triple_freq = <2106000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	sed -i 's/dual_freq = <2314000>;/dual_freq = <2496000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	sed -i 's/2158000/2106000/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
