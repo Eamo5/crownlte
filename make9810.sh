@@ -26,7 +26,7 @@ UPSTREAM=4\.9\.169
 PIE_OLD_VERSION=2\.0\.10
 PIE_VERSION=2\.0\.11
 OREO_OLD_VERSION=1\.2\.16
-OREO_VERSION=1\.2\.17
+OREO_VERSION=1\.3\.20
 
 # Default Device
 # Used as a backup when no valid device is defined
@@ -105,10 +105,10 @@ oreo_oc_crown () {
 	sed -i 's/upscale_ratio_table = < 80 1261000 90 >;/upscale_ratio_table = < 80 >;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	sed -i 's/unsigned long arg_cpu_max_c2 = 2704000;/unsigned long arg_cpu_max_c2 = 2964000;/g' "$CROWN_KERNEL_DIRECTORY"drivers/cpufreq/exynos-acme.c
 	sed -i 's/static unsigned long arg_cpu_max_c1 = 1794000;/static unsigned long arg_cpu_max_c1 = 2002000;/g' "$CROWN_KERNEL_DIRECTORY"drivers/cpufreq/exynos-acme.c
-	sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	sed -i 's/triple_freq = <1794000>;/triple_freq = <1586000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	sed -i 's/dual_freq = <2314000>;/dual_freq = <2002000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	sed -i 's/2158000/1586000/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+	sed -i 's/quad_freq = <1794000>;/quad_freq = <2106000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+	sed -i 's/triple_freq = <1794000>;/triple_freq = <2106000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+	sed -i 's/dual_freq = <2314000>;/dual_freq = <2496000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+	sed -i 's/2158000/2106000/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 }
 
 aosp_oc_star () {
@@ -335,13 +335,10 @@ elif [ "$2" == "oreo" ]; then
 		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
 		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
 		oreo_oc_crown
-#	elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-#		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	else
 		echo "Invalid device or OC configuration detected... Please check your inputs."
 	fi
