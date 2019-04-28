@@ -329,11 +329,11 @@ elif [ "$2" == "oreo" ]; then
 		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 	elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
 		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-	elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
+	elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
 		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
 		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
 		oreo_oc_crown
-	elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ]; then
+	elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
 		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
 		sed -i "s/-Endurance-Kernel-N9/-THEBOSS-Zeus-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
 		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
