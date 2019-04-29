@@ -143,6 +143,8 @@ struct cpufreq_policy {
 
 	/* For cpufreq driver's internal use */
 	void			*driver_data;
+	
+	bool 			iowait_boost_enable;
 };
 
 /* Only for ACPI */
