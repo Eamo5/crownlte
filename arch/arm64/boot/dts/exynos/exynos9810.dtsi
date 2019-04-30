@@ -4916,18 +4916,18 @@
 			shared-cpus = "0-3";
 
 			boost_table = < 100 598000 65 715000 35 832000 25 949000 15 1053000 0 >;
-			up_rate_limit_table = < 5000 >;
+			up_rate_limit_table = < 7000 >;
 			down_rate_limit_table = < 1000 >;
-			upscale_ratio_table = < 80 1248000 95 1456000 98 >;
+			upscale_ratio_table = < 80 1248000 95 1456000 100 >;
 		};
 		domain@1 {
 			device_type = "freqvar-tune";
 			shared-cpus = "4-7";
 
 			boost_table = < 20 858000 15 962000 5 1261000 0 >;
-			up_rate_limit_table = < 8000 >;
+			up_rate_limit_table = < 7000 >;
 			down_rate_limit_table = < 1000 >;
-			upscale_ratio_table = < 80 1261000 98 >;
+			upscale_ratio_table = < 80 1261000 100 >;
 		};
 	};
 

@@ -1759,9 +1759,8 @@ static inline unsigned long __cpu_util(int cpu, int delta)
 
 #ifdef CONFIG_SCHED_WALT
 	if (!walt_disabled && sysctl_sched_use_walt_cpu_util) {
-		util = div64_u64(cpu_rq(cpu)->cumulative_runnable_avg,
-			       walt_ravg_window >> SCHED_CAPACITY_SHIFT);
-		goto util_walt;
+		util = cfs_rq->prev_runnable_sum << SCHED_CAPACITY_SHIFT;
+		util = div_u64(util, walt_ravg_window);
 	}
 #endif
 	util = cfs_rq->avg.util_avg;
