@@ -34,34 +34,34 @@ DEFAULT_DEVICE=starlte
 DEFAULT_DEVICE_DIRECTORY="$STAR_KERNEL_DIRECTORY"
 
 # Kernel Source Paths
-STAR_KERNEL_DIRECTORY=~/kernels/builds/starlte-endurance/
-CROWN_KERNEL_DIRECTORY=~/kernels/builds/crownlte-endurance/
-TOOLCHAINS_DIRECTORY=~/kernels/toolchains/
+STAR_KERNEL_DIRECTORY=${HOME}/kernels/builds/starlte-endurance/
+CROWN_KERNEL_DIRECTORY=${HOME}/kernels/builds/crownlte-endurance/
+TOOLCHAINS_DIRECTORY=${HOME}/kernels/toolchains/
 
 # Android Image Kitchen paths
-AIK_PIE_960=~/PIE-960/
-AIK_PIE_965=~/PIE-965/
-AIK_PIE_N960=~/PIE-N960/
-AIK_OREO_960=~/APGK-960/
-AIK_OREO_965=~/APGK-965/
-AIK_OREO_N960=~/TW-N960/
-AIK_PIE_AOSP=~/PIE-960-AOSP/
-AIK_OREO_AOSP_960=~/AOSP-960/
-AIK_OREO_AOSP_965=~/AOSP-965/
+AIK_PIE_960=${HOME}/PIE-960/
+AIK_PIE_965=${HOME}/PIE-965/
+AIK_PIE_N960=${HOME}/PIE-N960/
+AIK_OREO_960=${HOME}/APGK-960/
+AIK_OREO_965=${HOME}/APGK-965/
+AIK_OREO_N960=${HOME}/TW-N960/
+AIK_PIE_AOSP=${HOME}/PIE-960-AOSP/
+AIK_OREO_AOSP_960=${HOME}/AOSP-960/
+AIK_OREO_AOSP_965=${HOME}/AOSP-965/
 
 # Zip directories
-ZIP_PIE=~/kernels/zip-pie/
-ZIP_PIE_N960=~/kernels/zip-note-pie/
-ZIP_OREO=~/kernels/zip/
-ZIP_OREO_N960=~/kernels/zip-note/
-ZIP_PIE_AOSP_S9=~/kernels/zip-aosp-pie/
-ZIP_PIE_AOSP_N960=~/kernels/zip-note-pie-aosp/
-ZIP_GSI_S9=~/kernels/zip-gsi/
-ZIP_GSI_N960=~/kernels/zip-note-gsi/
-ZIP_OREO_AOSP_S9=~/kernels/zip-aosp/
+ZIP_PIE=${HOME}/kernels/zip-pie/
+ZIP_PIE_N960=${HOME}/kernels/zip-note-pie/
+ZIP_OREO=${HOME}/kernels/zip/
+ZIP_OREO_N960=${HOME}/kernels/zip-note/
+ZIP_PIE_AOSP_S9=${HOME}/kernels/zip-aosp-pie/
+ZIP_PIE_AOSP_N960=${HOME}/kernels/zip-note-pie-aosp/
+ZIP_GSI_S9=${HOME}/kernels/zip-gsi/
+ZIP_GSI_N960=${HOME}/kernels/zip-note-gsi/
+ZIP_OREO_AOSP_S9=${HOME}/kernels/zip-aosp/
 
 # Zip Output Directoryy
-ZIP_OUTPUT=~/output/zip/
+ZIP_OUTPUT=${HOME}/output/zip/
 
 # Password for AIK sudo
 PASSWORD=
@@ -273,7 +273,9 @@ export SUBARCH=arm64
 # Check for specified GCC parameters. If none passed, use GCC 4.9 by default + use ccache to improve compile speeds
 
 if [ "$3" == "gcc-8" ]; then
-	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"gcc-arm-8.3-2019.03-x86_64-aarch64-linux-gnu/bin/aarch64-linux-gnu-"
+	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-8.1.0/bin/aarch64-linux-"
+elif [ "$3" == "gcc-9.1" ]; then
+	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-elf-gcc/bin/aarch64-elf-"
 elif [ "$3" == "gcc-4.9" ]; then
 	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-android-4.9/bin/aarch64-linux-android-"
 else
@@ -439,33 +441,33 @@ make -j$(nproc) clean
 make -j$(nproc) mrproper
 if [ "$2" == "pie" ] || [ "$2" == "els" ] || [ "$2" == "9.0-aosp" ]; then
 	if [ "$1" == "starlte" ]; then
-		make -j$(nproc) exynos9810-starlte_defconfig
+		make -j$(nproc) exynos9810-starlte_defconfig || exit
 	elif [ "$1" == "star2lte" ]; then
-		make -j$(nproc) exynos9810-star2lte_defconfig
+		make -j$(nproc) exynos9810-star2lte_defconfig || exit
 	elif [ "$1" == "crownlte" ]; then
-		make -j$(nproc) exynos9810-crownlte_defconfig
+		make -j$(nproc) exynos9810-crownlte_defconfig || exit
 	else
 		echo "Incorrect device variant configuration..."
 		echo "Using default device"
-		make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig
+		make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit
 	fi
 elif [ "$2" == "oreo" ] || [ "$2" == "apgk" ] || [ "$2" == "gsi" ] || [ "$2" == "8.1-aosp" ]; then
 	if [ "$1" == "starlte" ]; then
-		make -j$(nproc) exynos9810-starlte_calikernel_defconfig
+		make -j$(nproc) exynos9810-starlte_calikernel_defconfig || exit
 	elif [ "$1" == "star2lte" ]; then
-		make -j$(nproc) exynos9810-star2lte_calikernel_defconfig
+		make -j$(nproc) exynos9810-star2lte_calikernel_defconfig || exit
 	elif [ "$1" == "crownlte" ]; then
-		make -j$(nproc) exynos9810-crownlte_defconfig
+		make -j$(nproc) exynos9810-crownlte_defconfig || exit
 	else
 		echo "Incorrect device variant configuration..."
 		echo "Using default device"
-		make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig
+		make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit
 	fi
 else
 	echo "Did not define a known branch. Defaulting to using standard default device defconfig."
-	make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig
+	make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit
 fi
-make -j$(nproc)
+make -j$(nproc) || exit
 
 ## Cleanup
 
