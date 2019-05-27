@@ -378,7 +378,7 @@ case $2 in
 		# elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
 			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
 			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586Idk I have it disabled too,000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 		elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
 			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
 			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
