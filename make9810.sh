@@ -191,79 +191,82 @@ if [ "$1" == "update" ] || [ "$2" == "update" ] || [ "$3" == "update" ] || [ "$4
 	sed -i "s/"$PIE_OLD_VERSION"/"$PIE_VERSION"/g" "$ZIP_PIE_N960"META-INF/com/google/android/update-binary
 	sed -i "s/Endurance Kernel "$PIE_OLD_VERSION"/Endurance Kernel "$PIE_VERSION"/g" "$ZIP_PIE_N960"META-INF/com/google/android/updater-script
 	sed -i "s/Endurance Kernel "$PIE_OLD_VERSION"/Endurance Kernel "$PIE_VERSION"/g" "$ZIP_PIE_AOSP_N960"META-INF/com/google/android/updater-script
-	if [ "$1" == "update" ]; then
-		exit
-	fi
+	exit
 fi
 
 ## Kernel Directory
 
-if [ "$1" == "starlte" ] || [ "$1" == "star2lte" ]; then
-	cd "$STAR_KERNEL_DIRECTORY" || exit
-elif [ "$1" == "crownlte" ]; then
-	cd "$CROWN_KERNEL_DIRECTORY" || exit
-else
-	echo "Did not define a valid specific device!"
-	echo "Correct syntax is as follows: ./make9810.sh <device-variant> <branch> <gcc-version> <oc / uc> <test / release>"
-	echo "eg. $ ./make9810.sh starlte oreo gcc-4.9 test"
-	echo "Defaulting to star kernel directory..."
-	cd "$DEFAULT_DEVICE_DIRECTORY" || exit
-fi
+case $1 in
+	starlte|star2lte)
+		cd "$STAR_KERNEL_DIRECTORY" || exit ;;
+	crownlte)
+		cd "$CROWN_KERNEL_DIRECTORY" || exit ;;
+	*)
+		echo "Did not define a valid specific device!"
+		echo "Correct syntax is as follows: ./make9810.sh <device-variant> <branch> <gcc-version> <oc / uc> <test / release>"
+		echo "eg. $ ./make9810.sh starlte oreo gcc-4.9 test"
+		echo "Defaulting to star kernel directory..."
+		cd "$DEFAULT_DEVICE_DIRECTORY" || exit ;;
+esac
 
 ## Branch Selection
 # Note: This will remove all uncommited changes. This is necessary when modifying defconfigs on the fly. If desired, git reset --hard can be removed. A bypass argument may be added eventually.
 
 git reset --hard
-if [ "$1" == "starlte" ] || [ "$1" == "star2lte" ]; then
-	if [ "$2" == "pie" ]; then
-		git checkout Endurance-Kernel-P
-		git reset --hard
-	elif [ "$2" == "oreo" ]; then
-		git checkout Endurance-Kernel
-		git reset --hard
-	elif [ "$2" == "9.0-aosp" ]; then
-		git checkout Endurance-Kernel-P-AOSP
-		git reset --hard
-	elif [ "$2" == "gsi" ]; then
-		git checkout Endurance-Kernel-GSI
-		git reset --hard
-	elif [ "$2" == "8.1-aosp" ]; then
-		git checkout Endurance-Kernel-AOSP
-		git reset --hard
-	elif [ "$2" == "apgk" ]; then
-		git checkout tw80-android-o
-		git reset --hard
-	elif [ "$2" == "els" ]; then
-		git checkout isolated
-		git reset --hard
-	else
+case $1 in
+	starlte|star2lte)
+		case $2 in
+			pie)
+				git checkout Endurance-Kernel-P
+				git reset --hard ;;
+			oreo)
+				git checkout Endurance-Kernel
+				git reset --hard ;;
+			9.0-aosp)
+				git checkout Endurance-Kernel-P-AOSP
+				git reset --hard ;;
+			gsi)
+				git checkout Endurance-Kernel-GSI
+				git reset --hard ;;
+			8.1-aosp)
+				git checkout Endurance-Kernel-AOSP
+				git reset --hard ;;
+			apgk)
+				git checkout tw80-android-o
+				git reset --hard ;;
+			els)
+				git checkout isolated
+				git reset --hard ;;
+			*)
+				git checkout "$2"
+				git reset --hard ;;
+		esac ;;
+	crownlte)
+		case $2 in
+			pie)
+				git checkout Endurance-Kernel-P
+				git reset --hard ;;
+			oreo)
+				git checkout Endurance-Kernel
+				git reset --hard ;;
+			9.0-aosp)
+				git checkout Endurance-Kernel-P-AOSP
+				git reset --hard ;;
+			gsi)
+				git checkout Endurance-Kernel-GSI
+				git reset --hard ;;
+			els)
+				git checkout isolated
+				git reset --hard ;;
+			*)
+				git checkout "$2"
+				git reset --hard ;;
+		esac ;;
+	*)
+		echo "Unknown device..."
 		git checkout "$2"
 		git reset --hard
-	fi
-elif [ "$1" == "crownlte" ]; then
-	if [ "$2" == "pie" ]; then
-		git checkout Endurance-Kernel-P
-		git reset --hard
-	elif [ "$2" == "oreo" ]; then
-		git checkout Endurance-Kernel
-		git reset --hard
-	elif [ "$2" == "9.0-aosp" ]; then
-		git checkout Endurance-Kernel-P-AOSP
-		git reset --hard
-	elif [ "$2" == "gsi" ]; then
-		git checkout Endurance-Kernel-GSI
-		git reset --hard
-	elif [ "$2" == "els" ]; then
-		git checkout isolated
-		git reset --hard
-	else
-		git checkout "$2"
-		git reset --hard
-	fi
-else
-	git checkout "$2"
-	git reset --hard
-fi
+esac
 
 ## Build environment
 
@@ -272,201 +275,206 @@ export SUBARCH=arm64
 
 # Check for specified GCC parameters. If none passed, use GCC 4.9 by default + use ccache to improve compile speeds
 
-if [ "$3" == "gcc-8" ]; then
-	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-8.1.0/bin/aarch64-linux-"
-elif [ "$3" == "gcc-9.1" ]; then
-	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-elf-gcc/bin/aarch64-elf-"
-elif [ "$3" == "gcc-4.9" ]; then
-	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-else
+case $3 in
+	gcc-9.1)
+		export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-elf-gcc/bin/aarch64-elf-" ;;
+	gcc-8.1)
+		export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-8.1.0/bin/aarch64-linux-" ;;
+	gcc-4.9)
+		export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-android-4.9/bin/aarch64-linux-android-" ;;
+	*)
 	echo "Did not export a known toolchain... Defaulting to GCC 4.9"
 	echo "Correct syntax is as follows: $ ./make9810.sh <device-variant> <branch> <gcc-version> <oc / uc> <test / release>"
 	echo "For more information, run $ ./make9810.sh help"
-	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-android-4.9/bin/aarch64-linux-android-"
-fi
+	export CROSS_COMPILE="ccache "$TOOLCHAINS_DIRECTORY"aarch64-linux-android-4.9/bin/aarch64-linux-android-" ;;
+esac
 
 ## Build Specific Preperation
 # Includes specific modifications for OC and UC on the kernel, as well as modifies the kernels localversion on the fly.
 
-if [ "$2" == "pie" ]; then
-	if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
-		pie_oc_star
-	elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
-	elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
-		pie_oc_star
-	elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
-	elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-		pie_oc_crown
-#	elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-#		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-	else
-		echo "Invalid device or OC configuration detected... Please check your inputs."
-	fi
-elif [ "$2" == "oreo" ]; then
-	if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-		oreo_oc_star
-	elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-	elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-		oreo_oc_star
-	elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-	elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-		oreo_oc_crown
-#	elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-#		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-	else
-		echo "Invalid device or OC configuration detected... Please check your inputs."
-	fi
-elif [ "$2" == "9.0-aosp" ]; then
-	if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
-		pie_oc_star
-	elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
-	elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
-		pie_oc_star
-	elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
-	elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		pie_oc_crown
-#	elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-#		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586Idk I have it disabled too,000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-	else
-		echo "Invalid device or OC configuration detected... Please check your inputs."
-	fi
-elif [ "$2" == "gsi" ]; then
-	if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-GSI-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
-		sed -i 's/upscale_ratio_table = < 80 1248000 90 1456000 95 >;/upscale_ratio_table = < 80 >;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-		aosp_oc_star
-	elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-GSI-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-GSI-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-	elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-GSI-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-		aosp_oc_star
-	elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-GSI-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-GSI-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-	elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-		# This is an inconsistency I should perhaps investigate.
-		oreo_oc_crown
-#	elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-#		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-#		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
-		sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-	else
-		echo "Invalid device or OC configuration detected... Please check your inputs."
-	fi
-elif [ "$2" == "8.1-aosp" ]; then
-	if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-		aosp_oc_star
-	elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
-	elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-		aosp_oc_star
-	elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-		sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
-	elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
-		sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
-	else
-		echo "Invalid device or OC configuration detected... Please check your inputs."
-	fi
-fi
+case $2 in
+	pie)
+		if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
+			pie_oc_star
+		elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
+		elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
+			pie_oc_star
+		elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
+		elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+			pie_oc_crown
+		# elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+		else
+			echo "Invalid device or OC configuration detected... Please check your inputs."
+		fi ;;
+	oreo)
+		if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+			oreo_oc_star
+		elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+		elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+			oreo_oc_star
+		elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+		elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+			oreo_oc_crown
+		# elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+		else
+			echo "Invalid device or OC configuration detected... Please check your inputs."
+		fi ;;
+	9.0-aosp)
+		if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
+			pie_oc_star
+		elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
+		elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-OC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
+			pie_oc_star
+		elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-UC-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-"$PIE_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_defconfig
+		elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			pie_oc_crown
+		# elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586Idk I have it disabled too,000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+		else
+			echo "Invalid device or OC configuration detected... Please check your inputs."
+	fi ;;
+	gsi)
+		if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-GSI-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_defconfig
+			sed -i 's/upscale_ratio_table = < 80 1248000 90 1456000 95 >;/upscale_ratio_table = < 80 >;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+			aosp_oc_star
+		elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-GSI-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-GSI-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+		elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-GSI-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+			aosp_oc_star
+		elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-GSI-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-GSI-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+		elif [ "$1" == "crownlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-OC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+			# This is an inconsistency I should perhaps investigate.
+			oreo_oc_crown
+		# elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
+			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$OREO_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
+		else
+			echo "Invalid device or OC configuration detected... Please check your inputs."
+		fi ;;
+	8.1-aosp)
+		if [ "$1" == "starlte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+			aosp_oc_star
+		elif [ "$1" == "starlte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "starlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9/-Endurance-Kernel-S9-AOSP-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-starlte_calikernel_defconfig
+		elif [ "$1" == "star2lte" ] && [ "$4" == "oc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-OC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+			aosp_oc_star
+		elif [ "$1" == "star2lte" ] && [ "$4" == "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-UC-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+			sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+		elif [ "$1" == "star2lte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
+			sed -i "s/-Endurance-Kernel-S9+/-Endurance-Kernel-S9+-AOSP-"$OREO_VERSION"/g" "$STAR_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-star2lte_calikernel_defconfig
+		else
+			echo "Invalid device or OC configuration detected... Please check your inputs."
+		fi ;;
+esac
 
 ## Make
 
 make -j$(nproc) clean
 make -j$(nproc) mrproper
-if [ "$2" == "pie" ] || [ "$2" == "els" ] || [ "$2" == "9.0-aosp" ]; then
-	if [ "$1" == "starlte" ]; then
-		make -j$(nproc) exynos9810-starlte_defconfig || exit
-	elif [ "$1" == "star2lte" ]; then
-		make -j$(nproc) exynos9810-star2lte_defconfig || exit
-	elif [ "$1" == "crownlte" ]; then
-		make -j$(nproc) exynos9810-crownlte_defconfig || exit
-	else
-		echo "Incorrect device variant configuration..."
-		echo "Using default device"
-		make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit
-	fi
-elif [ "$2" == "oreo" ] || [ "$2" == "apgk" ] || [ "$2" == "gsi" ] || [ "$2" == "8.1-aosp" ]; then
-	if [ "$1" == "starlte" ]; then
-		make -j$(nproc) exynos9810-starlte_calikernel_defconfig || exit
-	elif [ "$1" == "star2lte" ]; then
-		make -j$(nproc) exynos9810-star2lte_calikernel_defconfig || exit
-	elif [ "$1" == "crownlte" ]; then
-		make -j$(nproc) exynos9810-crownlte_defconfig || exit
-	else
-		echo "Incorrect device variant configuration..."
-		echo "Using default device"
-		make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit
-	fi
-else
-	echo "Did not define a known branch. Defaulting to using standard default device defconfig."
-	make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit
-fi
+case $2 in
+	pie|els|9.0-aosp)
+		case $1 in
+			starlte)
+				make -j$(nproc) exynos9810-starlte_defconfig || exit ;;
+			star2lte)
+				make -j$(nproc) exynos9810-star2lte_defconfig || exit ;;
+			crownlte)
+				make -j$(nproc) exynos9810-crownlte_defconfig || exit ;;
+			*)
+				echo "Incorrect device variant configuration..."
+				echo "Using default device"
+				make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit ;;
+		esac ;;
+	oreo|apgk|gsi|8.1-aosp)
+		case $1 in
+			starlte)
+				make -j$(nproc) exynos9810-starlte_calikernel_defconfig || exit ;;
+			star2lte)
+				make -j$(nproc) exynos9810-star2lte_calikernel_defconfig || exit ;;
+			crownlte)
+				make -j$(nproc) exynos9810-crownlte_defconfig || exit ;;
+			*)
+				echo "Incorrect device variant configuration..."
+				echo "Using default device"
+				make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit ;;
+		esac ;;
+	*)
+		echo "Did not define a known branch. Defaulting to using standard default device defconfig."
+		make -j$(nproc) exynos9810-"$DEFAULT_DEVICE"_defconfig || exit ;;
+esac
 make -j$(nproc) || exit
 
 ## Cleanup
@@ -475,180 +483,186 @@ git reset --hard
 
 ## AIK Preparation
 
-if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
-	if [ "$1" == "starlte" ]; then
-		rm "$AIK_PIE_960"split_img/boot.img-dtb
-		rm "$AIK_PIE_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_960"split_img/boot.img-dtb
-		cd "$AIK_PIE_960" || exit
+case $2 in
+	pie|els)
+		case $1 in
+			starlte)
+				rm "$AIK_PIE_960"split_img/boot.img-dtb
+				rm "$AIK_PIE_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_960"split_img/boot.img-dtb
+				cd "$AIK_PIE_960" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_PIE_960"image-new.img "$ZIP_PIE"boot-G960F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_PIE_960"image-new.img "$ZIP_PIE"boot-G960F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_PIE_960"image-new.img "$ZIP_PIE"boot-G960F-uc.img
+				fi ;;
+			star2lte)
+				rm "$AIK_PIE_965"split_img/boot.img-dtb
+				rm "$AIK_PIE_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_965"split_img/boot.img-dtb
+				cd "$AIK_PIE_965" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F-uc.img
+			fi ;;
+			crownlte)
+				rm "$AIK_PIE_N960"split_img/boot.img-dtb
+				rm "$AIK_PIE_N960"split_img/boot.img-zImage
+				cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_N960"split_img/boot.img-zImage
+				cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_N960"split_img/boot.img-dtb
+				cd "$AIK_PIE_N960" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				cp "$AIK_PIE_N960"image-new.img "$ZIP_PIE_N960"boot.img ;;
+		esac ;;
+	oreo|apgk)
+		case $1 in
+			starlte)
+				rm "$AIK_OREO_960"split_img/boot.img-dtb
+				rm "$AIK_OREO_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_960"split_img/boot.img-dtb
+				cd "$AIK_OREO_960" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_OREO_960"image-new.img "$ZIP_OREO"boot-G960F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_OREO_960"image-new.img "$ZIP_OREO"boot-G960F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_OREO_960"image-new.img "$ZIP_OREO"boot-G960F-uc.img
+				fi ;;
+			star2lte)
+				rm "$AIK_OREO_965"split_img/boot.img-dtb
+				rm "$AIK_OREO_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_965"split_img/boot.img-dtb
+				cd "$AIK_OREO_965" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_OREO_965"image-new.img "$ZIP_OREO"boot-G965F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_OREO_965"image-new.img "$ZIP_OREO"boot-G965F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_OREO_965"image-new.img "$ZIP_OREO"boot-G965F-uc.img
+				fi ;;
+			crownlte)
+				rm "$AIK_OREO_N960"split_img/boot.img-dtb
+				rm "$AIK_OREO_N960"split_img/boot.img-zImage
+				cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_N960"split_img/boot.img-zImage
+				cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_N960"split_img/boot.img-dtb
+				cd "$AIK_OREO_N960" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				cp "$AIK_OREO_N960"image-new.img  "$ZIP_OREO_N960"boot.img ;;
+		esac ;;
+	9.0-aosp)
+		rm "$AIK_PIE_AOSP"split_img/boot.img-dtb
+		rm "$AIK_PIE_AOSP"split_img/boot.img-zImage
+		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_AOSP"split_img/boot.img-zImage
+		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_AOSP"split_img/boot.img-dtb
+		cd "$AIK_PIE_AOSP" || exit
 		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_PIE_960"image-new.img "$ZIP_PIE"boot-G960F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_PIE_960"image-new.img "$ZIP_PIE"boot-G960F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_PIE_960"image-new.img "$ZIP_PIE"boot-G960F-uc.img
-		fi
-	elif [ "$1" == "star2lte" ]; then
-		rm "$AIK_PIE_965"split_img/boot.img-dtb
-		rm "$AIK_PIE_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_965"split_img/boot.img-dtb
-		cd "$AIK_PIE_965" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F-oc.img
-		elif [ "$4" = "uc" ]; then
-			cp "$AIK_PIE_965"image-new.img "$ZIP_PIE"boot-G965F-uc.img
-		fi
-	elif [ "$1" == "crownlte" ]; then
-		rm "$AIK_PIE_N960"split_img/boot.img-dtb
-		rm "$AIK_PIE_N960"split_img/boot.img-zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_N960"split_img/boot.img-zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_N960"split_img/boot.img-dtb
-		cd "$AIK_PIE_N960" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		cp "$AIK_PIE_N960"image-new.img "$ZIP_PIE_N960"boot.img
-	fi
-elif [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
-	if [ "$1" == "starlte" ]; then
-		rm "$AIK_OREO_960"split_img/boot.img-dtb
-		rm "$AIK_OREO_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_960"split_img/boot.img-dtb
-		cd "$AIK_OREO_960" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_OREO_960"image-new.img "$ZIP_OREO"boot-G960F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_OREO_960"image-new.img "$ZIP_OREO"boot-G960F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_OREO_960"image-new.img "$ZIP_OREO"boot-G960F-uc.img
-		fi
-	elif [ "$1" == "star2lte" ]; then
-		rm "$AIK_OREO_965"split_img/boot.img-dtb
-		rm "$AIK_OREO_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_965"split_img/boot.img-dtb
-		cd "$AIK_OREO_965" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_OREO_965"image-new.img "$ZIP_OREO"boot-G965F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_OREO_965"image-new.img "$ZIP_OREO"boot-G965F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_OREO_965"image-new.img "$ZIP_OREO"boot-G965F-uc.img
-		fi
-	elif [ "$1" == "crownlte" ]; then
-		rm "$AIK_OREO_N960"split_img/boot.img-dtb
-		rm "$AIK_OREO_N960"split_img/boot.img-zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_N960"split_img/boot.img-zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_N960"split_img/boot.img-dtb
-		cd "$AIK_OREO_N960" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		cp "$AIK_OREO_N960"image-new.img  "$ZIP_OREO_N960"boot.img
-	fi
-elif [ "$2" == "9.0-aosp" ]; then
-	rm "$AIK_PIE_AOSP"split_img/boot.img-dtb
-	rm "$AIK_PIE_AOSP"split_img/boot.img-zImage
-	cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_PIE_AOSP"split_img/boot.img-zImage
-	cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_PIE_AOSP"split_img/boot.img-dtb
-	cd "$AIK_PIE_AOSP" || exit
-	echo "$PASSWORD" | sudo -S ./repackimg.sh
-	if [ "$1" == "crownlte" ]; then
-		cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_N960"boot.img
-	elif [ "$1" == "starlte" ]; then
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_S9"boot-G960F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_S9"boot-G960F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_S9"boot-G960F-uc.img
-		fi
-	elif [ "$1" == "star2lte" ]; then
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_PIE_AOSP"image-new.img  "$ZIP_PIE_AOSP_S9"boot-G965F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_PIE_AOSP"image-new.img  "$ZIP_PIE_AOSP_S9"boot-G965F-oc.img
-		elif [ "$4" == "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_PIE_AOSP"image-new.img  "$ZIP_PIE_AOSP_S9"boot-G965F-uc.img
-		fi
-	fi
-elif [ "$2" == "gsi" ]; then
-	if [ "$1" == "starlte" ]; then
-		rm "$AIK_OREO_960"split_img/boot.img-dtb
-		rm "$AIK_OREO_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_960"split_img/boot.img-dtb
-		cd "$AIK_OREO_960" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_OREO_960"image-new.img "$ZIP_GSI_S9"boot-G960F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_OREO_960"image-new.img "$ZIP_GSI_S9"boot-G960F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_OREO_960"image-new.img "$ZIP_GSI_S9"boot-G960F-uc.img
-		fi
-	elif [ "$1" == "star2lte" ]; then
-		rm "$AIK_OREO_965"split_img/boot.img-dtb
-		rm "$AIK_OREO_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_965"split_img/boot.img-dtb
-		cd "$AIK_OREO_965" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_OREO_965"image-new.img "$ZIP_GSI_S9"boot-G965F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_OREO_965"image-new.img "$ZIP_GSI_S9"boot-G965F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_OREO_965"image-new.img "$ZIP_GSI_S9"boot-G965F-uc.img
-		fi
-	elif [ "$1" == "crownlte" ]; then
-		rm "$AIK_OREO_N960"split_img/boot.img-dtb
-		rm "$AIK_OREO_N960"split_img/boot.img-zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_N960"split_img/boot.img-zImage
-		cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_N960"split_img/boot.img-dtb
-		cd "$AIK_OREO_N960" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		cp "$AIK_OREO_N960"image-new.img  "$ZIP_GSI_N960"boot.img
-	fi
-elif [ "$2" == "8.1-aosp" ]; then
-	if [ "$1" == "starlte" ]; then
-		rm "$AIK_OREO_AOSP_960"split_img/boot.img-dtb
-		rm "$AIK_OREO_AOSP_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_AOSP_960"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_AOSP_960"split_img/boot.img-dtb
-		cd "$AIK_OREO_AOSP_960" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_OREO_AOSP_960"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G960F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_OREO_AOSP_960"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G960F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_OREO_AOSP_960"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G960F-uc.img
-		fi
-	elif [ "$1" == "star2lte" ]; then
-		rm "$AIK_OREO_AOSP_965"split_img/boot.img-dtb
-		rm "$AIK_OREO_AOSP_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_AOSP_965"split_img/boot.img-zImage
-		cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_AOSP_965"split_img/boot.img-dtb
-		cd "$AIK_OREO_AOSP_965" || exit
-		echo "$PASSWORD" | sudo -S ./repackimg.sh
-		if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
-			cp "$AIK_OREO_AOSP_965"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G965F.img
-		elif [ "$4" == "oc" ]; then
-			cp "$AIK_OREO_AOSP_965"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G965F-oc.img
-		elif [ "$4" == "uc" ]; then
-			cp "$AIK_OREO_AOSP_965"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G965F-uc.img
-		fi
-	fi
-else
-	echo "This is where we depart. You're on your own for AIK!"
-	exit
-fi
+		case $1 in
+			starlte)
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_S9"boot-G960F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_S9"boot-G960F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_S9"boot-G960F-uc.img
+				fi ;;
+			star2lte)
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_PIE_AOSP"image-new.img  "$ZIP_PIE_AOSP_S9"boot-G965F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_PIE_AOSP"image-new.img  "$ZIP_PIE_AOSP_S9"boot-G965F-oc.img
+				elif [ "$4" == "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_PIE_AOSP"image-new.img  "$ZIP_PIE_AOSP_S9"boot-G965F-uc.img
+				fi ;;
+			crownlte)
+				cp "$AIK_PIE_AOSP"image-new.img "$ZIP_PIE_AOSP_N960"boot.img ;;
+		esac ;;
+	gsi)
+		case $1 in
+			starlte)
+				rm "$AIK_OREO_960"split_img/boot.img-dtb
+				rm "$AIK_OREO_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_960"split_img/boot.img-dtb
+				cd "$AIK_OREO_960" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_OREO_960"image-new.img "$ZIP_GSI_S9"boot-G960F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_OREO_960"image-new.img "$ZIP_GSI_S9"boot-G960F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_OREO_960"image-new.img "$ZIP_GSI_S9"boot-G960F-uc.img
+				fi ;;
+			star2lte)
+				rm "$AIK_OREO_965"split_img/boot.img-dtb
+				rm "$AIK_OREO_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_965"split_img/boot.img-dtb
+				cd "$AIK_OREO_965" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_OREO_965"image-new.img "$ZIP_GSI_S9"boot-G965F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_OREO_965"image-new.img "$ZIP_GSI_S9"boot-G965F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_OREO_965"image-new.img "$ZIP_GSI_S9"boot-G965F-uc.img
+				fi ;;
+			crownlte)
+				rm "$AIK_OREO_N960"split_img/boot.img-dtb
+				rm "$AIK_OREO_N960"split_img/boot.img-zImage
+				cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_N960"split_img/boot.img-zImage
+				cp "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_N960"split_img/boot.img-dtb
+				cd "$AIK_OREO_N960" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				cp "$AIK_OREO_N960"image-new.img  "$ZIP_GSI_N960"boot.img ;;
+		esac ;;
+	8.1-aosp)
+		case $1 in
+			starlte)
+				rm "$AIK_OREO_AOSP_960"split_img/boot.img-dtb
+				rm "$AIK_OREO_AOSP_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_AOSP_960"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_AOSP_960"split_img/boot.img-dtb
+				cd "$AIK_OREO_AOSP_960" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_OREO_AOSP_960"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G960F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_OREO_AOSP_960"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G960F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_OREO_AOSP_960"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G960F-uc.img
+				fi ;;
+			star2lte)
+				rm "$AIK_OREO_AOSP_965"split_img/boot.img-dtb
+				rm "$AIK_OREO_AOSP_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/Image "$AIK_OREO_AOSP_965"split_img/boot.img-zImage
+				cp "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dtb.img "$AIK_OREO_AOSP_965"split_img/boot.img-dtb
+				cd "$AIK_OREO_AOSP_965" || exit
+				echo "$PASSWORD" | sudo -S ./repackimg.sh
+				if [ "$4" != "uc" ] && [ "$4" != "oc" ]; then
+					cp "$AIK_OREO_AOSP_965"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G965F.img
+				elif [ "$4" == "oc" ]; then
+					cp "$AIK_OREO_AOSP_965"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G965F-oc.img
+				elif [ "$4" == "uc" ]; then
+					cp "$AIK_OREO_AOSP_965"image-new.img  "$ZIP_OREO_AOSP_S9"boot-G965F-uc.img
+				fi ;;
+		esac ;;
+	*)
+		echo "This is where we depart. You're on your own for AIK!"
+		exit ;;
+esac
 
 # If 'test' or 'release' aren't passed, the script ends here. Your kernel should be in the zip folder, or at least the relevant AIK folder.
 
@@ -657,68 +671,84 @@ fi
 # This will only zip the core boot-G965F.img & boot-G960F.img.bsdiff
 
 if [ "$4" == "test" ] || [ "$5" == "test" ]; then
-	if [ "$1" == "starlte" ] || [ "$1" == "star2lte" ]; then
-		if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
-			cd "$ZIP_PIE" || exit
-			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-"$PIE_VERSION".zip *
-		elif [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
-			cd "$ZIP_OREO" || exit
-			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-"$OREO_VERSION".zip *
-		elif [ "$2" == "9.0-aosp" ]; then
-			cd "$ZIP_PIE_AOSP_S9" || exit
-			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
-		elif [ "$2" == "gsi" ]; then
-			cd "$ZIP_GSI_S9" || exit
-			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
-		elif [ "$2" == "8.1-aosp" ]; then
-			cd "$ZIP_OREO_AOSP_S9" || exit
-			bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-AOSP-"$OREO_VERSION".zip *
-		fi
-	elif [ "$1" == "crownlte" ]; then
-		if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
-			cd "$ZIP_PIE_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$PIE_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-"$PIE_VERSION".zip *
-			fi
-		elif [ "$2" == "oreo" ]; then
-			cd "$ZIP_OREO_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$OREO_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-"$OREO_VERSION".zip *
-			fi
-		elif [ "$2" == "9.0-aosp" ]; then
-			cd "$ZIP_PIE_AOSP_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
-			fi
-		elif [ "$2" == "gsi" ]; then
-			cd "$ZIP_GSI_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
-			fi
-		fi
-	fi
+	case $1 in
+		starlte|star2lte)
+			case $2 in
+				pie|els)
+					cd "$ZIP_PIE" || exit
+					bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-"$PIE_VERSION".zip *
+					cp Endurance-Kernel-"$PIE_VERSION".zip "$ZIP_OUTPUT" ;;
+				oreo|apgk)
+					cd "$ZIP_OREO" || exit
+					bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-"$OREO_VERSION".zip *
+					cp Endurance-Kernel-"$OREO_VERSION".zip "$ZIP_OUTPUT" ;;
+				9.0-aosp)
+					cd "$ZIP_PIE_AOSP_S9" || exit
+					bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
+					cp Endurance-Kernel-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT" ;;
+				gsi)
+					cd "$ZIP_GSI_S9" || exit
+					bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
+					cp Endurance-Kernel-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT" ;;
+				8.1-aosp)
+					cd "$ZIP_OREO_AOSP_S9" || exit
+					bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-AOSP-"$OREO_VERSION".zip *
+					cp Endurance-Kernel-AOSP-"$OREO_VERSION".zip "$ZIP_OUTPUT" ;;
+			esac ;;
+		crownlte)
+			case $2 in
+				pie|els)
+					cd "$ZIP_PIE_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-N9-OC"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-OC"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-N9-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					fi ;;
+				oreo)
+					cd "$ZIP_OREO_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-N9-OC"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-N9-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					fi ;;
+				9.0-aosp)
+					cd "$ZIP_PIE_AOSP_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					fi ;;
+				gsi)
+					cd "$ZIP_GSI_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					fi
+			esac ;;
+	esac
 fi
 
 ## Kernel Release
@@ -727,66 +757,82 @@ fi
 # Refer to make9810release.sh for a reference example for how I create a release zip!
 
 if [ "$4" == "release" ] || [ "$5" == "release" ]; then
-	if [ "$1" == "starlte" ] || [ "$1" == "star2lte" ]; then
-		if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
-			cd "$ZIP_PIE" || exit
-			bsdiff_func
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-"$PIE_VERSION".zip *
-		elif [ "$2" == "oreo" ] || [ "$2" == "apgk" ]; then
-			cd "$ZIP_OREO" || exit
-			bsdiff_func
-    		rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-"$OREO_VERSION".zip *
-		elif [ "$2" == "9.0-aosp" ]; then
-			cd "$ZIP_PIE_AOSP_S9" || exit
-			bsdiff_func
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
-		elif [ "$2" == "gsi" ]; then
-			cd "$ZIP_GSI_S9" || exit
-			bsdiff_func
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
-		elif [ "$2" == "8.1-aosp" ]; then
-			cd "$ZIP_OREO_AOSP_S9" || exit
-			bsdiff_func
-			rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
-			zip -r Endurance-Kernel-AOSP-"$OREO_VERSION".zip *
-		fi
-	elif [ "$1" == "crownlte" ]; then
-		if [ "$2" == "pie" ] || [ "$2" == "els" ]; then
-			cd "$ZIP_PIE_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$PIE_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-"$PIE_VERSION".zip *
-			fi
-		elif [ "$2" == "oreo" ]; then
-			cd "$ZIP_OREO_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-"$OREO_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-"$OREO_VERSION".zip *
-			fi
-		elif [ "$2" == "9.0-aosp" ]; then
-			cd "$ZIP_PIE_AOSP_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
-			fi
-		elif [ "$2" == "gsi" ]; then
-			cd "$ZIP_GSI_N960" || exit
-			rm -f *.zip
-			if [ "$4" == "oc" ]; then
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION"-OC.zip *
-			else
-				zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
-			fi
-		fi
-	fi
+	case $1 in
+		starlte|star2lte)
+			case $2 in
+				pie|els)
+					cd "$ZIP_PIE" || exit
+					bsdiff_func
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-"$PIE_VERSION".zip *
+					cp Endurance-Kernel-"$PIE_VERSION".zip "$ZIP_OUTPUT" ;;
+				oreo|apgk)
+					cd "$ZIP_OREO" || exit
+					bsdiff_func
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-"$OREO_VERSION".zip *
+					cp Endurance-Kernel-"$OREO_VERSION".zip "$ZIP_OUTPUT" ;;
+				9.0-aosp)
+					cd "$ZIP_PIE_AOSP_S9" || exit
+					bsdiff_func
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-AOSP-"$PIE_VERSION".zip *
+					cp Endurance-Kernel-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT" ;;
+				gsi)
+					cd "$ZIP_GSI_S9" || exit
+					bsdiff_func
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-GSI-"$OREO_VERSION".zip *
+					cp Endurance-Kernel-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT" ;;
+				8.1-aosp)
+					cd "$ZIP_OREO_AOSP_S9" || exit
+					bsdiff_func
+					rm -f boot-G960F.img boot-G960F-uc.img boot-G960F-oc.img boot-G965F-oc.img boot-G965F-uc.img *.zip
+					zip -r Endurance-Kernel-AOSP-"$OREO_VERSION".zip *
+					cp Endurance-Kernel-AOSP-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+			esac ;;
+		crownlte)
+			case $2 in
+				pie|els)
+					cd "$ZIP_PIE_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-N9-OC"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-OC"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-N9-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					fi;;
+				oreo) 
+					cd "$ZIP_OREO_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-N9-OC"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-N9-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					fi ;;
+				9.0-aosp)
+					cd "$ZIP_PIE_AOSP_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+					fi
+				gsi)
+					cd "$ZIP_GSI_N960" || exit
+					rm -f *.zip
+					if [ "$4" == "oc" ]; then
+						zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					else
+						zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+					fi
+			esac
+	esac
 fi
