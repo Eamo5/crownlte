@@ -21,12 +21,12 @@
 # File paths *must* have an '/' at the end, or else the script will generate various errors
 
 # Versions
-OLD_UPSTREAM=4\.9\.168
-UPSTREAM=4\.9\.169
-PIE_OLD_VERSION=2\.0\.10
-PIE_VERSION=2\.0\.11
-OREO_OLD_VERSION=1\.2\.16
-OREO_VERSION=1\.2\.17
+OLD_UPSTREAM=4\.9\.178
+UPSTREAM=4\.9\.179
+PIE_OLD_VERSION=2\.0\.19
+PIE_VERSION=2\.0\.20
+OREO_OLD_VERSION=1\.2\.26
+OREO_VERSION=1\.2\.27
 
 # Default Device
 # Used as a backup when no valid device is defined
@@ -126,10 +126,10 @@ aosp_oc_star () {
 
 bsdiff_func () {
 	bsdiff boot-G965F.img boot-G960F.img boot-G960F.img.bsdiff
-	bsdiff boot-G960F-oc.img boot-G960F.img boot-G960F-oc.img.bsdiff
-	bsdiff boot-G960F-uc.img boot-G960F.img boot-G960F-uc.img.bsdiff
-	bsdiff boot-G965F-oc.img boot-G965F.img boot-G965F-oc.img.bsdiff
-	bsdiff boot-G965F-uc.img boot-G965F.img boot-G965F-uc.img.bsdiff
+	bsdiff boot-G960F.img boot-G960F-oc.img boot-G960F-oc.img.bsdiff
+	bsdiff boot-G960F.img boot-G960F-uc.img boot-G960F-uc.img.bsdiff
+	bsdiff boot-G965F.img boot-G965F-oc.img boot-G965F-oc.img.bsdiff
+	bsdiff boot-G965F.img boot-G965F-uc.img boot-G965F-uc.img.bsdiff
 }
 
 ## Help
@@ -822,7 +822,7 @@ if [ "$4" == "release" ] || [ "$5" == "release" ]; then
 					else
 						zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
 						cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
-					fi
+					fi ;;
 				gsi)
 					cd "$ZIP_GSI_N960" || exit
 					rm -f *.zip
