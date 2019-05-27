@@ -731,21 +731,21 @@ if [ "$4" == "test" ] || [ "$5" == "test" ]; then
 					cd "$ZIP_PIE_AOSP_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					fi ;;
 				gsi)
 					cd "$ZIP_GSI_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					fi
 			esac ;;
 	esac
@@ -817,21 +817,21 @@ if [ "$4" == "release" ] || [ "$5" == "release" ]; then
 					cd "$ZIP_PIE_AOSP_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					fi ;;
 				gsi)
 					cd "$ZIP_GSI_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					fi
 			esac
 	esac
