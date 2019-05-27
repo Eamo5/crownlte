@@ -25,8 +25,8 @@ OLD_UPSTREAM=4\.9\.178
 UPSTREAM=4\.9\.179
 PIE_OLD_VERSION=2\.0\.19
 PIE_VERSION=2\.0\.20
-OREO_OLD_VERSION=1\.2\.26
-OREO_VERSION=1\.2\.27
+OREO_OLD_VERSION=1\.2\.25
+OREO_VERSION=1\.2\.26
 
 # Default Device
 # Used as a backup when no valid device is defined
@@ -711,8 +711,8 @@ if [ "$4" == "test" ] || [ "$5" == "test" ]; then
 					cd "$ZIP_PIE_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-N9-OC"$PIE_VERSION".zip *
-						cp Endurance-Kernel-N9-OC"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					else
 						zip -r Endurance-Kernel-N9-"$PIE_VERSION".zip *
 						cp Endurance-Kernel-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
@@ -721,7 +721,7 @@ if [ "$4" == "test" ] || [ "$5" == "test" ]; then
 					cd "$ZIP_OREO_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-N9-OC"$OREO_VERSION".zip *
+						zip -r Endurance-Kernel-N9-OC-"$OREO_VERSION".zip *
 						cp Endurance-Kernel-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					else
 						zip -r Endurance-Kernel-N9-"$OREO_VERSION".zip *
@@ -797,8 +797,8 @@ if [ "$4" == "release" ] || [ "$5" == "release" ]; then
 					cd "$ZIP_PIE_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-N9-OC"$PIE_VERSION".zip *
-						cp Endurance-Kernel-N9-OC"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					else
 						zip -r Endurance-Kernel-N9-"$PIE_VERSION".zip *
 						cp Endurance-Kernel-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
@@ -807,7 +807,7 @@ if [ "$4" == "release" ] || [ "$5" == "release" ]; then
 					cd "$ZIP_OREO_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-N9-OC"$OREO_VERSION".zip *
+						zip -r Endurance-Kernel-N9-OC-"$OREO_VERSION".zip *
 						cp Endurance-Kernel-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					else
 						zip -r Endurance-Kernel-N9-"$OREO_VERSION".zip *
