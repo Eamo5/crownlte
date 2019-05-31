@@ -378,7 +378,7 @@ case $2 in
 		# elif [ "$1" == "crownlte" ] && [ "$4" == "uc" ]; then
 			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
 			# sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-UC-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
-			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586Idk I have it disabled too,000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
+			# sed -i 's/quad_freq = <1794000>;/quad_freq = <1586000>;/g' "$STAR_KERNEL_DIRECTORY"arch/arm64/boot/dts/exynos/exynos9810.dtsi
 		elif [ "$1" == "crownlte" ] && [ "$4" != "oc" ] && [ "$4" != "uc" ]; then
 			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/configs/exynos9810-crownlte_defconfig
 			sed -i "s/-Endurance-Kernel-N9/-Endurance-Kernel-N9-"$PIE_VERSION"/g" "$CROWN_KERNEL_DIRECTORY"arch/arm64/boot/dts/include/dt-bindings/soc/samsung/crown_conf.h
@@ -731,21 +731,21 @@ if [ "$4" == "test" ] || [ "$5" == "test" ]; then
 					cd "$ZIP_PIE_AOSP_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					fi ;;
 				gsi)
 					cd "$ZIP_GSI_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					fi
 			esac ;;
 	esac
@@ -817,21 +817,21 @@ if [ "$4" == "release" ] || [ "$5" == "release" ]; then
 					cd "$ZIP_PIE_AOSP_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-OC-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip *
-						cp Endurance-Kernel-AOSP-N9-"$PIE_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip *
+						cp Endurance-Kernel-N9-AOSP-"$PIE_VERSION".zip "$ZIP_OUTPUT"
 					fi ;;
 				gsi)
 					cd "$ZIP_GSI_N960" || exit
 					rm -f *.zip
 					if [ "$4" == "oc" ]; then
-						zip -r Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-OC-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					else
-						zip -r Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip *
-						cp Endurance-Kernel-GSI-N9-"$OREO_VERSION".zip "$ZIP_OUTPUT"
+						zip -r Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip *
+						cp Endurance-Kernel-N9-GSI-"$OREO_VERSION".zip "$ZIP_OUTPUT"
 					fi
 			esac
 	esac
