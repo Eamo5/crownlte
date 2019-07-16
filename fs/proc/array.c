@@ -648,9 +648,17 @@ int proc_pid_statlmkd(struct seq_file *m, struct pid_namespace *ns,
 {
 	struct mm_struct *mm = get_task_mm(task);
 #ifdef CONFIG_MMU
+#ifdef CONFIG_ZSWAP
 	unsigned long size = 0, resident = 0, swapresident = 0;
+#else
+	unsigned long size = 0, resident = 0;
+#endif
 	if (mm) {
+#ifdef CONFIG_ZSWAP
 		task_statlmkd(mm, &size, &resident, &swapresident);
+#else
+		task_statlmkd(mm, &size, &resident);
+#endif
 		mmput(mm);
 	}
 #else
@@ -662,7 +670,9 @@ int proc_pid_statlmkd(struct seq_file *m, struct pid_namespace *ns,
 #endif
 	seq_put_decimal_ull(m, "", size);
 	seq_put_decimal_ull(m, " ", resident);
+#ifdef CONFIG_ZSWAP
 	seq_put_decimal_ull(m, " ", swapresident);
+#endif
 	seq_putc(m, '\n');
 
 	return 0;
